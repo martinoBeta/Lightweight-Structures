@@ -1,4 +1,4 @@
-function [pb,ub]=buckle(Ks,Ksigmas,nnode,node_z);
+function [pb,ub]=buckle(Ks,Ksigmas,nnode,node_z)
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % Solve beam buckling equation
     % File name: buckle.m
@@ -14,14 +14,14 @@ function [pb,ub]=buckle(Ks,Ksigmas,nnode,node_z);
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     %% Calculate eigenvalues and eigenvectors
-    [ub,pb] = eig(Ks,Ksigmas);
+    [ub,pb] = eig(Ks,-Ksigmas);
     bucklingLoads = diag(pb);
 
     %% Split bending and twist modes into separate vectors
     posBending = [];
     posTorsion = [];
-    for i = 1:nnode-1                 
-        if all(abs(ub(3:3:end,i)) > 1e-10)    % tolerance for 0, checks every third option for fi ~= 0
+    for i = 1:(nnode-1)*3                 
+        if any(abs(ub(3:3:end,i)) > 1e-10)    % tolerance for 0, checks every third option for fi ~= 0
             posTorsion = [posTorsion, i];
         else
             posBending = [posBending, i];
@@ -46,9 +46,10 @@ function [pb,ub]=buckle(Ks,Ksigmas,nnode,node_z);
     fiTorsion = zeros(nnode,length(posTorsion)); 
 
     for i = 1:length(posTorsion)
-        fiTorsion(1:end,i) = [w0(3), ubTorsion(2:3:end,i)];
-        if norm(fiTorsion(:,i)) ~= 0
-            fiTorsion(:,i) = fiTorsion(:,i) / norm(fiTorsion(i,1));
+        fiTorsion(1:end,i) = [w0(3); ubTorsion(3:3:end,i)];
+        fiNorm = norm(fiTorsion(:,i));
+        if fiNorm ~= 0
+            fiTorsion(:,i) = fiTorsion(:,i) / fiNorm;
         end
     end
 
@@ -56,14 +57,16 @@ function [pb,ub]=buckle(Ks,Ksigmas,nnode,node_z);
     thetaBending = zeros(nnode,length(posBending)); 
 
     for i = 1:length(posBending)
-        wBending(1:end,i) = [w0(1), ubBending(1:3:end,i)];
-        if norm(wTorsion(:,i)) ~= 0
-            wBending(:,i) = wBending(:,i) / norm(wBending(i,1));
+        wBending(1:end,i) = [w0(1); ubBending(1:3:end,i)];
+        wNorm = norm(wBending(:,i));
+        if  wNorm ~= 0
+            wBending(:,i) = wBending(:,i) / wNorm;
         end
 
-        thetaBending(1:end,i) = [w0(2), ubBending(2:3:end,i)];
-        if norm(thetaBending(:,i)) ~= 0
-            thetaBending(:,i) = thetaBending(:,i) / norm(thetaBending(i,1));
+        thetaBending(1:end,i) = [w0(2); ubBending(2:3:end,i)];
+        thetaNorm = norm(thetaBending(:,i));
+        if thetaNorm ~= 0
+            thetaBending(:,i) = thetaBending(:,i) / thetaNorm;
         end
     end
 
@@ -81,6 +84,7 @@ function [pb,ub]=buckle(Ks,Ksigmas,nnode,node_z);
     end
     xlabel("Node position [m]")
     ylabel("Twist [-]")
+    legend("1")
     
 
     % Bending 
@@ -96,6 +100,8 @@ function [pb,ub]=buckle(Ks,Ksigmas,nnode,node_z);
     end
     xlabel("Node position [m]")
     ylabel("Displacement [-]")
+    legend("1")
+
 
 
     figure("name","Bending Rotation") 
@@ -107,6 +113,7 @@ function [pb,ub]=buckle(Ks,Ksigmas,nnode,node_z);
     end
     xlabel("Node position [m]")
     ylabel("Rotation [-]")
+    legend("1")
 
 
     %% Present the buckling loads

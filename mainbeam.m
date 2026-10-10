@@ -4,6 +4,9 @@
 %
 % Use SI units only
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+clc
+clear 
+close all
 
 % Definitions and input data
 L=1.0;		% Length [m]
@@ -18,16 +21,30 @@ A=1.2E-4;	% Cross-section area [m2]
 ro=2700;	% Material density [kg/m3]
 J0=I0*ro;	% Mass moment of inertia [kgm]
 
+
+%% TESTING
+L=1.0;		% Length [m]
+E=1;	% Youngs modulus [N/m2]
+G=1;	% Shear modulus [N/m2]
+I=1;		% Moment of inertia about x-axis [m4]
+J=1;		% Torsional constant [m4]
+EI=E*I;		% Bending stiffness [Nm2]
+GJ=G*J;		% Torsional stiffness [Nm2]
+I0=1;	% Polar moment of inertia [m4]
+A=1;	% Cross-section area [m2]
+ro=1;	% Material density [kg/m3]
+J0=I0*ro;	% Mass moment of inertia [kgm]
+
 % Loads and masses
-m=A*ro;	% mass per unit length of elements [kg/m]
-q=1;           % Distributed load [N/m]
+m=A*ro;	    % mass per unit length of elements [kg/m]
+q=0;        % Distributed load [N/m]
 qt=0;		% Distributed torque [Nm/m]
-S=1;           % Concentrated load at end of beam [N]
-T=1;		% Beam end torque [Nm]
+S=1;        % Concentrated load at end of beam [N]
+T=0;		% Beam end torque [Nm]
 P=-1.;		% Buckling load [N]
 
 % Element input data
-nelem=10;		% number of elements
+nelem=1;		% number of elements
 le=L/nelem;		% length of elements for even distribution
 ndof=3*(nelem+1);	% number of degrees of freedom
 nnode=nelem+1;		% number of nodes
@@ -61,4 +78,3 @@ Ksigmas=Ksigma(4:ndof,4:ndof);
 % (Column i of ub is buckling mode of buckling load (i,i) in pb)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 [pb,ub]=buckle(Ks,Ksigmas,nnode,node_z);
-
