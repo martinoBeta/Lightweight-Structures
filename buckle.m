@@ -20,13 +20,19 @@ function [pb,ub]=buckle(Ks,Ksigmas,nnode,node_z)
     %% Split bending and twist modes into separate vectors
     posBending = [];
     posTorsion = [];
+
     for i = 1:(nnode-1)*3                 
-        if any(abs(ub(3:3:end,i)) > 1e-10)    % tolerance for 0, checks every third option for fi ~= 0
+        if any(abs(ub(3:3:end,i)) > 1e-9)   % tolerance for 0, checks every third option for fi ~= 0
             posTorsion = [posTorsion, i];
         else
             posBending = [posBending, i];
         end
     end
+
+
+    ubTorsion = ub(:,posTorsion);
+    ubBending = ub(:,posBending);
+   
 
     % checks if the number of eigenvalues for torsion is the expected number
     if length(posTorsion) == (nnode - 1)
@@ -34,8 +40,6 @@ function [pb,ub]=buckle(Ks,Ksigmas,nnode,node_z)
         error("The number of torsion eigenvectors found doesn't match");
     end
 
-    ubTorsion = ub(:,posTorsion);
-    ubBending = ub(:,posBending);
 
 
     %% Normalize deflections, rotations and twist for plotting purposes (without risking to mix up signs or divide by zero)
@@ -75,9 +79,13 @@ function [pb,ub]=buckle(Ks,Ksigmas,nnode,node_z)
     % Torsion
     nPlotT = 2;      % number of maximum plotted buckling modes
     nPlotT = min(nPlotT,length(posTorsion));
-    figure("name","Torsion")            % twist (fi)
+    figure("name","Buckling")            % twist (fi)
+    tiledlayout(1,3)
+    nexttile
+    grid on
     title("Torsion twist \phi")
     hold on
+
     for i = 1:nPlotT
         plot(node_z,fiTorsion(:,i))
         plot(node_z,fiTorsion(:,i),"o")
@@ -91,7 +99,8 @@ function [pb,ub]=buckle(Ks,Ksigmas,nnode,node_z)
     nPlotB = 2;      % number of maximum plotted buckling modes
     nPlotB = min(nPlotB,length(posBending));
 
-    figure("name","Bending Displacement") 
+    nexttile
+    grid on
     title("Bending displacement w")        
     hold on
     for i = 1:nPlotB
@@ -104,7 +113,8 @@ function [pb,ub]=buckle(Ks,Ksigmas,nnode,node_z)
 
 
 
-    figure("name","Bending Rotation") 
+    nexttile
+    grid on
     title("Bending rotation \theta")        
     hold on
     for i = 1:nPlotB
@@ -121,10 +131,10 @@ function [pb,ub]=buckle(Ks,Ksigmas,nnode,node_z)
 
     fprintf("\nDisplaying %.f/%.f buckling loads for bending:\n",numberLoads,length(posBending))
     for i = 1:numberLoads
-        fprintf("m = %2.f , F = %5.1f [N]\n",i,bucklingLoads(posBending(i)));
+        fprintf("m = %2.f , F = %6.2f [N]\n",i,bucklingLoads(posBending(i)));
     end
 
     fprintf("\nDisplaying buckling load for torsion: \n");
-    fprintf("F = %1.f [N]\n",bucklingLoads(posTorsion(1)));
+    fprintf("F = %6.2f [N]\n",bucklingLoads(posTorsion(1)));
 
 end

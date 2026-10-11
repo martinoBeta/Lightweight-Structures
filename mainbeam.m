@@ -21,20 +21,6 @@ A=1.2E-4;	% Cross-section area [m2]
 ro=2700;	% Material density [kg/m3]
 J0=I0*ro;	% Mass moment of inertia [kgm]
 
-
-%% TESTING
-L=1.0;		% Length [m]
-E=1;	% Youngs modulus [N/m2]
-G=1;	% Shear modulus [N/m2]
-I=1;		% Moment of inertia about x-axis [m4]
-J=1;		% Torsional constant [m4]
-EI=E*I;		% Bending stiffness [Nm2]
-GJ=G*J;		% Torsional stiffness [Nm2]
-I0=1;	% Polar moment of inertia [m4]
-A=1;	% Cross-section area [m2]
-ro=1;	% Material density [kg/m3]
-J0=I0*ro;	% Mass moment of inertia [kgm]
-
 % Loads and masses
 m=A*ro;	    % mass per unit length of elements [kg/m]
 q=0;        % Distributed load [N/m]

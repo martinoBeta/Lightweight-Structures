@@ -34,9 +34,14 @@ function [defl,teta,fi,umax,tetamax,fimax]=bending(Ks,Qs,K,Q,nnode,node_z)
         fi(z)=W_tot(z*3);
     end
 
-    umax=max(defl);
-    tetamax=max(teta);
-    fimax=max(fi);
+    [~,n]=max(abs(defl));
+    umax=defl(n);
+
+    [~,n]=max(abs(teta));
+    tetamax=teta(n);
+        
+    [~,n]=max(abs(fi));
+    fimax=fi(n);
 
     uNorm = norm(defl);
     tetaNorm = norm(teta);
